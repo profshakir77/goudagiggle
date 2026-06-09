@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "Hsiix1EDoHGQQDClz3jEZ"
+uri = "file://artifacts/gouda-giggles/public/images/product-1.png"
+type = "image"
+title = "Classic charcuterie board on wood"
+
+[[generated]]
+id = "uO_6nl7b8u062FoZcqY7j"
+uri = "file://artifacts/gouda-giggles/public/images/product-2.png"
+type = "image"
+title = "Date night charcuterie box"
+
+[[generated]]
+id = "JoVkj668o-LAYA6mRL0xE"
+uri = "file://artifacts/gouda-giggles/public/images/product-3.png"
+type = "image"
+title = "Vegetarian cheese grazing board"
+
+[[generated]]
+id = "rLczbJ5yeQCQToQDCDOt8"
+uri = "file://artifacts/gouda-giggles/public/images/product-4.png"
+type = "image"
+title = "Large party grazing board"
+
+[[generated]]
+id = "6B5iEpEUqFEvPEZ_84-c0"
+uri = "file://artifacts/gouda-giggles/public/images/product-5.png"
+type = "image"
+title = "Brunch charcuterie board"
+
+[[generated]]
+id = "mMvIYgWrTPLMWznyltUCf"
+uri = "file://artifacts/gouda-giggles/public/images/product-6.png"
+type = "image"
+title = "Artisan cheese tasting board"
+
+[[generated]]
+id = "_Ca_fnm2r51gywdcFOks2"
+uri = "file://artifacts/gouda-giggles/public/images/gallery-1.png"
+type = "image"
+title = "Wedding grazing table overhead"
+
+[[generated]]
+id = "NaKjSLb-8GGJQ9eVRE7b9"
+uri = "file://artifacts/gouda-giggles/public/images/gallery-2.png"
+type = "image"
+title = "Corporate event charcuterie spread"
+
+[[generated]]
+id = "z1-gKI9LFbHox5GbAJ1r1"
+uri = "file://artifacts/gouda-giggles/public/images/gallery-3.png"
+type = "image"
+title = "Rustic outdoor grazing table"
+
+[[generated]]
+id = "oqASpTy8T6A0z-ASpIiUI"
+uri = "file://artifacts/gouda-giggles/public/images/gallery-4.png"
+type = "image"
+title = "Elegant holiday charcuterie spread"

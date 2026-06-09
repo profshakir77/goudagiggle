@@ -3,20 +3,29 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Gouda Giggles Charcuterie API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: products
+    description: Charcuterie boards and grazing tables
+  - name: orders
+    description: Order management
+  - name: quotes
+    description: Catering quote requests
+  - name: gallery
+    description: Gallery images
+  - name: cart
+    description: Shopping cart
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +33,155 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a single product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          description: Not found
+
+  /products/featured:
+    get:
+      operationId: getFeaturedProducts
+      tags: [products]
+      summary: Get featured/popular products
+      responses:
+        "200":
+          description: Featured products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+
+  /orders:
+    post:
+      operationId: createOrder
+      tags: [orders]
+      summary: Place an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "400":
+          description: Validation error
+
+  /orders/{id}:
+    get:
+      operationId: getOrder
+      tags: [orders]
+      summary: Get order by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Order"
+        "404":
+          description: Not found
+
+  /quotes:
+    post:
+      operationId: createQuote
+      tags: [quotes]
+      summary: Submit a catering quote request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuoteInput"
+      responses:
+        "201":
+          description: Quote request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quote"
+        "400":
+          description: Validation error
+
+  /gallery:
+    get:
+      operationId: listGallery
+      tags: [gallery]
+      summary: Get gallery images
+      responses:
+        "200":
+          description: Gallery images
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GalleryImage"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [products]
+      summary: Get store stats summary
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StoreStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +192,152 @@ components:
       required:
         - status
 
+    Product:
+      type: object
+      required: [id, name, description, price, category, inStock]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        category:
+          type: string
+        serves:
+          type: ["string", "null"]
+        imageUrl:
+          type: ["string", "null"]
+        inStock:
+          type: boolean
+        featured:
+          type: boolean
+
+    OrderItem:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId:
+          type: integer
+        quantity:
+          type: integer
+
+    OrderInput:
+      type: object
+      required: [customerName, customerEmail, customerPhone, eventDate, deliveryAddress, items]
+      properties:
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        eventDate:
+          type: string
+        deliveryAddress:
+          type: string
+        specialInstructions:
+          type: ["string", "null"]
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+
+    Order:
+      type: object
+      required: [id, customerName, customerEmail, customerPhone, eventDate, deliveryAddress, status, total, items, createdAt]
+      properties:
+        id:
+          type: integer
+        customerName:
+          type: string
+        customerEmail:
+          type: string
+        customerPhone:
+          type: string
+        eventDate:
+          type: string
+        deliveryAddress:
+          type: string
+        specialInstructions:
+          type: ["string", "null"]
+        status:
+          type: string
+        total:
+          type: number
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        createdAt:
+          type: string
+
+    QuoteInput:
+      type: object
+      required: [name, email, phone, eventType, eventDate, guestCount, message]
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        eventType:
+          type: string
+        eventDate:
+          type: string
+        guestCount:
+          type: integer
+        message:
+          type: string
+
+    Quote:
+      type: object
+      required: [id, name, email, phone, eventType, eventDate, guestCount, message, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        eventType:
+          type: string
+        eventDate:
+          type: string
+        guestCount:
+          type: integer
+        message:
+          type: string
+        createdAt:
+          type: string
+
+    GalleryImage:
+      type: object
+      required: [id, url, caption, category]
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        caption:
+          type: string
+        category:
+          type: string
+
+    StoreStats:
+      type: object
+      required: [totalProducts, categories, startingPrice]
+      properties:
+        totalProducts:
+          type: integer
+        categories:
+          type: integer
+        startingPrice:
+          type: number
+        happyCustomers:
+          type: integer
