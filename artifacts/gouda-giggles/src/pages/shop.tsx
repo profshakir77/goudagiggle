@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useSearch, useLocation } from "wouter";
 import { useListProducts } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,11 +9,30 @@ import { ShoppingBag } from "lucide-react";
 const CATEGORIES = ["All", "Boards", "Grazing Tables", "Workshops", "Add-ons"];
 
 export default function Shop() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const search = useSearch();
+  const urlCategory = new URLSearchParams(search).get("category") ?? "All";
+  const [activeCategory, setActiveCategory] = useState(
+    CATEGORIES.includes(urlCategory) ? urlCategory : "All"
+  );
+
+  useEffect(() => {
+    const cat = new URLSearchParams(search).get("category") ?? "All";
+    setActiveCategory(CATEGORIES.includes(cat) ? cat : "All");
+  }, [search]);
+  const [, navigate] = useLocation();
   const { data: products, isLoading } = useListProducts(
     activeCategory !== "All" ? { category: activeCategory } : {}
   );
   const { addToCart } = useCart();
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    if (cat === "All") {
+      navigate("/shop");
+    } else {
+      navigate(`/shop?category=${encodeURIComponent(cat)}`);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -29,7 +48,7 @@ export default function Shop() {
             key={cat}
             variant={activeCategory === cat ? "default" : "outline"}
             className="rounded-full"
-            onClick={() => setActiveCategory(cat)}
+            onClick={() => handleCategoryChange(cat)}
           >
             {cat}
           </Button>
