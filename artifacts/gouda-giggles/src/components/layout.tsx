@@ -57,9 +57,11 @@ function Navbar() {
       <div className="container mx-auto px-4 h-24 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <img
-            src="/images/logo.png"
+            src="/images/logo.webp"
             alt="Gouda Giggles Charcuterie"
             className="h-20 w-auto max-w-[220px] object-contain"
+            width="220"
+            height="80"
           />
         </Link>
 
@@ -147,7 +149,7 @@ function Footer() {
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
-            <img src="/images/logo.png" alt="Gouda Giggles Charcuterie" className="h-16 w-auto mb-4" />
+            <img src="/images/logo.webp" alt="Gouda Giggles Charcuterie" className="h-16 w-auto mb-4" loading="lazy" width="180" height="64" />
             <p className="mt-2 text-secondary-foreground/80 max-w-sm">
               Crafting joyful, artisanal charcuterie boards and grazing tables for Latham, NY and the Capital Region's most memorable moments.
             </p>

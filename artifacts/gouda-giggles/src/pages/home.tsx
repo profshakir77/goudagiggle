@@ -1,5 +1,4 @@
 import { Link } from "wouter";
-import { motion } from "framer-motion";
 import { useGetFeaturedProducts, useListProducts } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -33,7 +32,7 @@ const SERVICES = [
     description: "Small, medium, and large boards loaded with curated cheeses, cured meats, seasonal fruits, and house-made accompaniments.",
     href: "/shop",
     cta: "Shop Boards",
-    image: "/images/product-1.png",
+    image: "/images/product-1.webp",
   },
   {
     icon: "🌿",
@@ -41,7 +40,7 @@ const SERVICES = [
     description: "Stunning tableside spreads for weddings, bridal showers, and large celebrations - a full visual experience your guests will never forget.",
     href: "/quote",
     cta: "Get a Quote",
-    image: "/images/product-4.png",
+    image: "/images/product-4.webp",
   },
   {
     icon: "🍫",
@@ -49,7 +48,7 @@ const SERVICES = [
     description: "Chocolate-dipped strawberries, macarons, truffles, and seasonal sweets arranged into an indulgent dessert charcuterie board.",
     href: "/shop",
     cta: "Order Now",
-    image: "/images/product-6.png",
+    image: "/images/product-6.webp",
   },
 ];
 
@@ -70,16 +69,11 @@ export default function Home() {
   return (
     <div className="w-full">
 
-      {/* Hero Section */}
+      {/* Hero Section — CSS animated, no JS library */}
       <section className="relative w-full overflow-hidden bg-secondary">
         <div className="absolute inset-0 bg-primary/5 mix-blend-multiply" />
         <div className="container mx-auto px-4 py-24 md:py-32 relative z-10 grid md:grid-cols-2 gap-12 items-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-xl"
-          >
+          <div className="max-w-xl animate-fade-in-up">
             <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide">Latham, NY · Capital Region</span>
             <h1 className="font-serif text-5xl md:text-7xl font-bold text-primary leading-tight">
               Joyful grazing for beautiful moments.
@@ -100,25 +94,24 @@ export default function Home() {
                 {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
               </div>
               <span className="font-medium text-foreground">5-star rated</span>
-              <span>· Serving Albany, Latham & Capital Region</span>
+              <span>· Serving Albany, Latham &amp; Capital Region</span>
             </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative h-[400px] md:h-[550px] w-full rounded-2xl overflow-hidden shadow-2xl"
-          >
+          </div>
+          <div className="relative h-[400px] md:h-[550px] w-full rounded-2xl overflow-hidden shadow-2xl animate-fade-in-scale">
             <img
-              src="/images/product-4.png"
+              src="/images/product-4.webp"
               alt="Large party grazing board by Gouda Giggles Charcuterie Latham NY"
               className="absolute inset-0 w-full h-full object-cover"
+              fetchPriority="high"
+              decoding="sync"
+              width="800"
+              height="550"
             />
             <div className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur rounded-xl p-4 shadow-lg">
               <p className="font-serif text-primary font-bold text-lg">🧀 Now taking orders!</p>
               <p className="text-sm text-muted-foreground">Custom boards for any occasion. Order online or call <a href="tel:4156366046" className="text-primary font-medium">(415) 636-6046</a></p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -133,7 +126,7 @@ export default function Home() {
             {SERVICES.map((s) => (
               <Link key={s.title} href={s.href} className="group block bg-secondary rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={s.image} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" width="400" height="300" />
                 </div>
                 <div className="p-6">
                   <div className="text-3xl mb-2">{s.icon}</div>
@@ -173,6 +166,9 @@ export default function Home() {
                           src={product.imageUrl}
                           alt={product.name}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading="lazy"
+                          width="400"
+                          height="300"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-muted-foreground bg-muted text-5xl">🧀</div>
@@ -233,7 +229,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <img src="/images/product-6.png" alt="Artisan charcuterie ingredients Latham NY" className="rounded-2xl shadow-xl w-full" />
+              <img src="/images/product-6.webp" alt="Artisan charcuterie ingredients Latham NY" className="rounded-2xl shadow-xl w-full" loading="lazy" width="600" height="450" />
             </div>
             <div>
               <h2 className="font-serif text-3xl md:text-5xl font-bold mb-6">Made like your best friend made it.</h2>
@@ -296,9 +292,9 @@ export default function Home() {
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto">A peek at the boards that made it to the table.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {["/images/gallery-1.png", "/images/gallery-2.png", "/images/gallery-3.png", "/images/gallery-4.png"].map((img, i) => (
+            {["/images/gallery-1.webp", "/images/gallery-2.webp", "/images/gallery-3.webp", "/images/gallery-4.webp"].map((img, i) => (
               <Link key={i} href="/gallery" className="group overflow-hidden rounded-xl aspect-square block">
-                <img src={img} alt={`Gouda Giggles charcuterie board ${i + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                <img src={img} alt={`Gouda Giggles charcuterie board ${i + 1}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" width="300" height="300" />
               </Link>
             ))}
           </div>
@@ -325,7 +321,7 @@ export default function Home() {
               Get a Quote
             </Link>
           </div>
-          <p className="mt-8 text-primary-foreground/60 text-sm">Call or text: <a href="tel:4156366046" className="text-white underline">(415) 636-6046</a> · Serving Latham, Albany, Troy, Schenectady & the Capital Region</p>
+          <p className="mt-8 text-primary-foreground/60 text-sm">Call or text: <a href="tel:4156366046" className="text-white underline">(415) 636-6046</a> · Serving Latham, Albany, Troy, Schenectady &amp; the Capital Region</p>
         </div>
       </section>
 
