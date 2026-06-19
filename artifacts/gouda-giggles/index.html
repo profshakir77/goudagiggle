@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
 
     <!-- Primary SEO -->
     <title>Gouda Giggles Charcuterie | Latham, NY | Boards, Grazing Tables & Workshops</title>
@@ -59,10 +59,18 @@
     </script>
 
     <link rel="icon" type="image/png" href="/images/logo.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script type="text/javascript" src="https://web.squarecdn.com/v1/square.js"></script>
+
+    <!-- Fonts: preconnect first, then load with display=swap -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" media="print" onload="this.media='all'" />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" />
+    </noscript>
+
+    <!-- Square SDK: deferred so it doesn't block rendering -->
+    <script defer src="https://web.squarecdn.com/v1/square.js"></script>
   </head>
   <body>
     <div id="root"></div>
