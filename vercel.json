@@ -1,12 +1,8 @@
 {
-  "buildCommand": "pnpm --filter @workspace/gouda-giggles run build",
+  "buildCommand": "BASE_PATH=/ PORT=3000 pnpm --filter @workspace/gouda-giggles run build",
   "outputDirectory": "artifacts/gouda-giggles/dist/public",
   "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": null,
-  "env": {
-    "BASE_PATH": "/",
-    "PORT": "3000"
-  },
   "rewrites": [
     { "source": "/api/products/featured", "destination": "/api/products/featured" },
     { "source": "/api/products/:id", "destination": "/api/products/[id]" },
