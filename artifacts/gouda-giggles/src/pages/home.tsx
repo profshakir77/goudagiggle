@@ -79,7 +79,7 @@ export default function Home() {
               Joyful Grazing For Beautiful Moments.
             </h1>
             <p className="mt-3 text-base font-semibold text-primary/70 tracking-wide">
-              Serving Albany, Latham &amp; Entire Capital Region and Surrounding
+              Serving Entire Capital Region and Surroundings
             </p>
             <p className="mt-4 text-lg text-foreground/80 leading-relaxed">
               Artisanal charcuterie boards and grazing tables crafted with love for gifts, gatherings, weddings, and every celebration in between.
