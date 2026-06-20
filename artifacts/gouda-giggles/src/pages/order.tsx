@@ -73,12 +73,28 @@ export default function OrderPage() {
 
     let mounted = true;
 
-    async function initSquare() {
-      try {
-        if (!window.Square) {
-          console.error("Square.js not loaded");
+    async function loadSquareScript(): Promise<void> {
+      if (window.Square) return;
+      return new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[src*="squarecdn.com"]');
+        if (existing) {
+          existing.addEventListener("load", () => resolve());
+          existing.addEventListener("error", reject);
           return;
         }
+        const script = document.createElement("script");
+        script.src = "https://web.squarecdn.com/v1/square.js";
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    async function initSquare() {
+      try {
+        await loadSquareScript();
+        if (!window.Square || !mounted) return;
         const payments = await window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
         const card = await payments.card();
         await card.attach("#card-container");
@@ -95,8 +111,13 @@ export default function OrderPage() {
     return () => { mounted = false; };
   }, [items.length]);
 
+  useEffect(() => {
+    if (items.length === 0) {
+      setLocation("/cart");
+    }
+  }, [items.length, setLocation]);
+
   if (items.length === 0) {
-    setLocation("/cart");
     return null;
   }
 
