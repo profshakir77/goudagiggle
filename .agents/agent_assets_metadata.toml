@@ -60,3 +60,33 @@ id = "oqASpTy8T6A0z-ASpIiUI"
 uri = "file://artifacts/gouda-giggles/public/images/gallery-4.png"
 type = "image"
 title = "Elegant holiday charcuterie spread"
+
+[[generated]]
+id = "LMZAo5us8YqelVGDfbMK5"
+uri = "file://artifacts/gouda-giggles/public/images/cat-charcuterie-board.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "KvhKuodyYLpChPwBG8bGM"
+uri = "file://artifacts/gouda-giggles/public/images/cat-grab-and-go.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "LJPoMwTsN5gWzdompni0h"
+uri = "file://artifacts/gouda-giggles/public/images/cat-charcuterie-cup.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "MLk7aLns07G33y7dT8Np4"
+uri = "file://artifacts/gouda-giggles/public/images/cat-fruit-platter.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "RJ56-U36Wsq4_AkxdCo9k"
+uri = "file://artifacts/gouda-giggles/public/images/cat-chocolates.png"
+type = "image"
+title = "generated_image"

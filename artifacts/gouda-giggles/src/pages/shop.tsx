@@ -6,7 +6,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart-context";
 import { ShoppingBag } from "lucide-react";
 
-const CATEGORIES = ["All", "Boards", "Grazing Tables", "Workshops", "Add-ons"];
+const CATEGORIES = ["All", "Charcuterie Board", "Grab & Go", "Charcuterie Cups", "Fruit Platters", "Add-Ons"];
 
 export default function Shop() {
   const search = useSearch();
