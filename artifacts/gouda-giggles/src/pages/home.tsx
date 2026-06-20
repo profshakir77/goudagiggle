@@ -76,7 +76,7 @@ export default function Home() {
           <div className="max-w-xl animate-fade-in-up">
             <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide">Latham, NY · Capital Region</span>
             <h1 className="font-serif text-5xl md:text-7xl font-bold text-primary leading-tight">
-              Joyful grazing for beautiful moments.
+              Joyful Grazing For Beautiful Moments.
             </h1>
             <p className="mt-6 text-lg text-foreground/80 leading-relaxed">
               Artisanal charcuterie boards and grazing tables crafted with love for gifts, gatherings, weddings, and every celebration in between.
