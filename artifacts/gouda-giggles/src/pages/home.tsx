@@ -97,7 +97,6 @@ export default function Home() {
                 {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />)}
               </div>
               <span className="font-medium text-foreground">5-star rated</span>
-              <span>· Serving Albany, Latham &amp; Capital Region</span>
             </div>
           </div>
           <div className="relative h-[400px] md:h-[550px] w-full rounded-2xl overflow-hidden shadow-2xl animate-fade-in-scale">
