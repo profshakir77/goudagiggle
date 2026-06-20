@@ -78,7 +78,10 @@ export default function Home() {
             <h1 className="font-serif text-5xl md:text-7xl font-bold text-primary leading-tight">
               Joyful Grazing For Beautiful Moments.
             </h1>
-            <p className="mt-6 text-lg text-foreground/80 leading-relaxed">
+            <p className="mt-3 text-base font-semibold text-primary/70 tracking-wide">
+              Serving Albany, Latham &amp; Entire Capital Region and Surrounding
+            </p>
+            <p className="mt-4 text-lg text-foreground/80 leading-relaxed">
               Artisanal charcuterie boards and grazing tables crafted with love for gifts, gatherings, weddings, and every celebration in between.
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
