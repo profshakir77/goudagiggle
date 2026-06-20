@@ -45,8 +45,12 @@ declare const __SQUARE_APP_ID__: string;
 declare const __SQUARE_LOCATION_ID__: string;
 declare const __SQUARE_ENVIRONMENT__: string;
 
-const SQUARE_APP_ID = __SQUARE_APP_ID__;
-const SQUARE_LOCATION_ID = __SQUARE_LOCATION_ID__;
+const SQUARE_APP_ID = __SQUARE_APP_ID__.trim();
+const SQUARE_LOCATION_ID = __SQUARE_LOCATION_ID__.trim();
+const SQUARE_ENVIRONMENT = __SQUARE_ENVIRONMENT__.trim();
+const SQUARE_JS_URL = SQUARE_ENVIRONMENT === "production"
+  ? "https://web.squarecdn.com/v1/square.js"
+  : "https://sandbox.web.squarecdn.com/v1/square.js";
 
 export default function OrderPage() {
   const [, setLocation] = useLocation();
@@ -74,17 +78,26 @@ export default function OrderPage() {
     let mounted = true;
 
     async function loadSquareScript(): Promise<void> {
+      // Remove any Square script loaded from the wrong URL (e.g. production vs sandbox)
+      const wrongScript = document.querySelector(`script[src*="squarecdn.com"]:not([src="${SQUARE_JS_URL}"])`);
+      if (wrongScript) {
+        wrongScript.remove();
+        delete (window as { Square?: unknown }).Square;
+      }
+
       if (window.Square) return;
+
       return new Promise((resolve, reject) => {
-        const existing = document.querySelector('script[src*="squarecdn.com"]');
+        const existing = document.querySelector(`script[src="${SQUARE_JS_URL}"]`);
         if (existing) {
+          // Script already injected — wait for it if still loading
+          if (window.Square) { resolve(); return; }
           existing.addEventListener("load", () => resolve());
           existing.addEventListener("error", reject);
           return;
         }
         const script = document.createElement("script");
-        script.src = "https://web.squarecdn.com/v1/square.js";
-        script.async = true;
+        script.src = SQUARE_JS_URL;
         script.onload = () => resolve();
         script.onerror = reject;
         document.head.appendChild(script);
