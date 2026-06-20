@@ -74,7 +74,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-primary/5 mix-blend-multiply" />
         <div className="container mx-auto px-4 py-24 md:py-32 relative z-10 grid md:grid-cols-2 gap-12 items-center">
           <div className="max-w-xl animate-fade-in-up">
-            <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide">Latham, NY · Capital Region</span>
+            <span className="inline-block bg-primary/10 text-primary text-sm font-semibold px-4 py-1.5 rounded-full mb-4 tracking-wide">365 Troy Schenectady Road, Latham, NY</span>
             <h1 className="font-serif text-5xl md:text-7xl font-bold text-primary leading-tight">
               Joyful Grazing For Beautiful Moments.
             </h1>
