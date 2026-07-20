@@ -11,6 +11,7 @@ export const ordersTable = pgTable("orders", {
   deliveryAddress: text("delivery_address").notNull(),
   specialInstructions: text("special_instructions"),
   status: text("status").notNull().default("pending"),
+  paymentMethod: text("payment_method").notNull().default("card"),
   total: numeric("total", { precision: 10, scale: 2 }).notNull(),
   items: jsonb("items").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

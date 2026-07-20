@@ -120,7 +120,8 @@ export const GetOrderResponse = zod.object({
  * @summary Process Square payment and create order
  */
 export const CreatePaymentBody = zod.object({
-  "sourceId": zod.string(),
+  "paymentMethod": zod.enum(["card", "cod"]).default("card"),
+  "sourceId": zod.string().optional(),
   "customerName": zod.string(),
   "customerEmail": zod.string(),
   "customerPhone": zod.string(),

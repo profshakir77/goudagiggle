@@ -24,12 +24,7 @@ router.post("/", async (req, res) => {
     }
 
     const data = parsed.data;
-    const locationId = process.env.SQUARE_LOCATION_ID;
-
-    if (!locationId) {
-      res.status(500).json({ error: "Square location not configured" });
-      return;
-    }
+    const paymentMethod = data.paymentMethod ?? "card";
 
     // Calculate total from DB prices (never trust client)
     let totalCents = 0;
@@ -38,6 +33,44 @@ router.post("/", async (req, res) => {
       if (rows.length > 0) {
         totalCents += Math.round(parseFloat(rows[0].price) * 100) * item.quantity;
       }
+    }
+
+    if (paymentMethod === "cod") {
+      // Cash on Delivery — skip Square, create order as pending/unpaid
+      const [order] = await db
+        .insert(ordersTable)
+        .values({
+          customerName: data.customerName,
+          customerEmail: data.customerEmail,
+          customerPhone: data.customerPhone,
+          eventDate: data.eventDate,
+          deliveryAddress: data.deliveryAddress,
+          specialInstructions: data.specialInstructions ?? null,
+          status: "pending",
+          paymentMethod: "cod",
+          total: (totalCents / 100).toFixed(2),
+          items: data.items,
+        })
+        .returning();
+
+      res.status(201).json({
+        ...order,
+        total: parseFloat(order.total),
+        createdAt: order.createdAt.toISOString(),
+      });
+      return;
+    }
+
+    // Card payment — existing Square flow
+    if (!data.sourceId) {
+      res.status(400).json({ error: "sourceId is required for card payments" });
+      return;
+    }
+
+    const locationId = process.env.SQUARE_LOCATION_ID;
+    if (!locationId) {
+      res.status(500).json({ error: "Square location not configured" });
+      return;
     }
 
     const client = getSquareClient();
@@ -71,6 +104,7 @@ router.post("/", async (req, res) => {
         deliveryAddress: data.deliveryAddress,
         specialInstructions: data.specialInstructions ?? null,
         status: "paid",
+        paymentMethod: "card",
         total: (totalCents / 100).toFixed(2),
         items: data.items,
       })

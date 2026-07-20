@@ -63,7 +63,7 @@ export default function OrderConfirmation() {
 
         <div className="border-t border-border pt-4">
           <div className="flex justify-between font-bold text-lg">
-            <span>Total Paid</span>
+            <span>{order.status === "pending" ? "Total Due on Delivery" : "Total Paid"}</span>
             <span>${order.total.toFixed(2)}</span>
           </div>
         </div>

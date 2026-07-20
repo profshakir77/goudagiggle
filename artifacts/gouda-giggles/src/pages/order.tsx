@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ShieldCheck, CreditCard, Lock } from "lucide-react";
+import { ShieldCheck, CreditCard, Lock, Banknote } from "lucide-react";
 
 declare global {
   interface Window {
@@ -52,12 +52,15 @@ const SQUARE_JS_URL = SQUARE_ENVIRONMENT === "production"
   ? "https://web.squarecdn.com/v1/square.js"
   : "https://sandbox.web.squarecdn.com/v1/square.js";
 
+type PaymentMethod = "card" | "cod";
+
 export default function OrderPage() {
   const [, setLocation] = useLocation();
   const { items, subtotal, clearCart } = useCart();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [cardReady, setCardReady] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("card");
   const cardRef = useRef<{ tokenize: () => Promise<{ status: string; token?: string; errors?: { message: string }[] }> } | null>(null);
 
   const form = useForm<OrderFormValues>({
@@ -74,11 +77,11 @@ export default function OrderPage() {
 
   useEffect(() => {
     if (items.length === 0) return;
+    if (paymentMethod !== "card") return;
 
     let mounted = true;
 
     async function loadSquareScript(): Promise<void> {
-      // Remove any Square script loaded from the wrong URL (e.g. production vs sandbox)
       const wrongScript = document.querySelector(`script[src*="squarecdn.com"]:not([src="${SQUARE_JS_URL}"])`);
       if (wrongScript) {
         wrongScript.remove();
@@ -90,7 +93,6 @@ export default function OrderPage() {
       return new Promise((resolve, reject) => {
         const existing = document.querySelector(`script[src="${SQUARE_JS_URL}"]`);
         if (existing) {
-          // Script already injected — wait for it if still loading
           if (window.Square) { resolve(); return; }
           existing.addEventListener("load", () => resolve());
           existing.addEventListener("error", reject);
@@ -122,7 +124,7 @@ export default function OrderPage() {
 
     initSquare();
     return () => { mounted = false; };
-  }, [items.length]);
+  }, [items.length, paymentMethod]);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -135,56 +137,87 @@ export default function OrderPage() {
   }
 
   const onSubmit = async (data: OrderFormValues) => {
-    if (!cardRef.current) {
-      setPaymentError("Payment form not ready. Please refresh and try again.");
-      return;
-    }
-
     setIsProcessing(true);
     setPaymentError(null);
 
     try {
-      const result = await cardRef.current.tokenize();
+      if (paymentMethod === "card") {
+        if (!cardRef.current) {
+          setPaymentError("Payment form not ready. Please refresh and try again.");
+          setIsProcessing(false);
+          return;
+        }
 
-      if (result.status !== "OK" || !result.token) {
-        const msg = result.errors?.[0]?.message ?? "Card tokenization failed";
-        setPaymentError(msg);
-        setIsProcessing(false);
-        return;
+        const result = await cardRef.current.tokenize();
+
+        if (result.status !== "OK" || !result.token) {
+          const msg = result.errors?.[0]?.message ?? "Card tokenization failed";
+          setPaymentError(msg);
+          setIsProcessing(false);
+          return;
+        }
+
+        const response = await fetch("/api/payments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentMethod: "card",
+            sourceId: result.token,
+            ...data,
+            items: items.map((item) => ({
+              productId: item.product.id,
+              quantity: item.quantity,
+            })),
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error ?? "Payment failed");
+        }
+
+        const order = await response.json();
+        clearCart();
+        setLocation(`/order-confirmation/${order.id}`);
+      } else {
+        // Cash on Delivery
+        const response = await fetch("/api/payments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            paymentMethod: "cod",
+            ...data,
+            items: items.map((item) => ({
+              productId: item.product.id,
+              quantity: item.quantity,
+            })),
+          }),
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error ?? "Order placement failed");
+        }
+
+        const order = await response.json();
+        clearCart();
+        setLocation(`/order-confirmation/${order.id}`);
       }
-
-      const response = await fetch("/api/payments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          sourceId: result.token,
-          ...data,
-          items: items.map((item) => ({
-            productId: item.product.id,
-            quantity: item.quantity,
-          })),
-        }),
-      });
-
-      if (!response.ok) {
-        const err = await response.json();
-        throw new Error(err.error ?? "Payment failed");
-      }
-
-      const order = await response.json();
-      clearCart();
-      setLocation(`/order-confirmation/${order.id}`);
     } catch (err) {
       setPaymentError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setIsProcessing(false);
     }
   };
 
+  const isCardSelected = paymentMethod === "card";
+  const isCodSelected = paymentMethod === "cod";
+  const canSubmit = isCardSelected ? (cardReady && !isProcessing) : !isProcessing;
+
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       <h1 className="font-serif text-4xl font-bold text-primary mb-2 text-center">Complete Your Order</h1>
       <p className="text-center text-muted-foreground mb-10 flex items-center justify-center gap-2">
-        <Lock className="h-4 w-4" /> Secured by Square
+        <Lock className="h-4 w-4" /> Secure Checkout
       </p>
 
       <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
@@ -259,7 +292,7 @@ export default function OrderPage() {
                     <FormItem>
                       <FormLabel>Delivery Address</FormLabel>
                       <FormControl>
-                        <Input placeholder="123 Main St, Hoboken, NJ 07030" {...field} />
+                        <Input placeholder="123 Main St, Albany, NY 12207" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -287,21 +320,90 @@ export default function OrderPage() {
             </Form>
           </div>
 
-          {/* Payment Section */}
+          {/* Payment Method Selector */}
           <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 shadow-sm">
-            <h2 className="font-serif text-2xl font-bold mb-2 flex items-center gap-3">
-              <CreditCard className="h-6 w-6 text-primary" /> Payment
-            </h2>
-            <p className="text-sm text-muted-foreground mb-6">Your card details are encrypted and processed securely by Square.</p>
+            <h2 className="font-serif text-2xl font-bold mb-6">Payment Method</h2>
 
-            {/* Square card element mounts here */}
-            <div
-              id="card-container"
-              className="min-h-[90px] rounded-xl border border-border bg-background p-3"
-            />
+            <div className="grid sm:grid-cols-2 gap-3 mb-6">
+              {/* Pay by Card */}
+              <button
+                type="button"
+                onClick={() => { setPaymentMethod("card"); setPaymentError(null); }}
+                className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${
+                  isCardSelected
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-background hover:border-primary/50"
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                  isCardSelected ? "border-primary" : "border-muted-foreground"
+                }`}>
+                  {isCardSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 font-semibold text-sm">
+                    <CreditCard className="h-4 w-4 text-primary" />
+                    Pay by Card
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Secure payment via Square</p>
+                </div>
+              </button>
 
-            {!cardReady && (
-              <p className="text-xs text-muted-foreground mt-2 animate-pulse">Loading payment form...</p>
+              {/* Cash on Delivery */}
+              <button
+                type="button"
+                onClick={() => { setPaymentMethod("cod"); setPaymentError(null); }}
+                className={`flex items-center gap-3 p-4 rounded-xl border-2 text-left transition-all ${
+                  isCodSelected
+                    ? "border-primary bg-primary/5"
+                    : "border-border bg-background hover:border-primary/50"
+                }`}
+              >
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                  isCodSelected ? "border-primary" : "border-muted-foreground"
+                }`}>
+                  {isCodSelected && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 font-semibold text-sm">
+                    <Banknote className="h-4 w-4 text-primary" />
+                    Cash on Delivery
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">Pay when your order arrives</p>
+                </div>
+              </button>
+            </div>
+
+            {/* Card form — only shown when card is selected */}
+            {isCardSelected && (
+              <div>
+                <p className="text-sm text-muted-foreground mb-4">Your card details are encrypted and processed securely by Square.</p>
+
+                <div
+                  id="card-container"
+                  className="min-h-[90px] rounded-xl border border-border bg-background p-3"
+                />
+
+                {!cardReady && (
+                  <p className="text-xs text-muted-foreground mt-2 animate-pulse">Loading payment form...</p>
+                )}
+
+                <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
+                  <ShieldCheck className="h-4 w-4 text-green-600" />
+                  <span>256-bit SSL encryption. We never store your card details.</span>
+                </div>
+              </div>
+            )}
+
+            {/* COD confirmation message */}
+            {isCodSelected && (
+              <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 flex items-start gap-3">
+                <Banknote className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-semibold text-amber-800 mb-1">Pay when your order is delivered</p>
+                  <p className="text-amber-700">Please have the exact amount of <span className="font-bold">${subtotal.toFixed(2)}</span> ready at delivery. We accept cash only for this option.</p>
+                </div>
+              </div>
             )}
 
             {paymentError && (
@@ -309,11 +411,6 @@ export default function OrderPage() {
                 {paymentError}
               </div>
             )}
-
-            <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-              <ShieldCheck className="h-4 w-4 text-green-600" />
-              <span>256-bit SSL encryption. We never store your card details.</span>
-            </div>
           </div>
 
           {/* Submit button */}
@@ -322,7 +419,7 @@ export default function OrderPage() {
             form="order-form"
             size="lg"
             className="w-full h-14 text-lg rounded-xl"
-            disabled={isProcessing || !cardReady}
+            disabled={!canSubmit}
           >
             {isProcessing ? (
               <span className="flex items-center gap-2">
@@ -330,8 +427,10 @@ export default function OrderPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                Processing payment...
+                {isCodSelected ? "Placing order..." : "Processing payment..."}
               </span>
+            ) : isCodSelected ? (
+              `Place Order — Pay $${subtotal.toFixed(2)} on Delivery`
             ) : (
               `Pay $${subtotal.toFixed(2)}`
             )}
@@ -368,7 +467,11 @@ export default function OrderPage() {
 
             <div className="mt-4 pt-4 border-t border-border/50 text-xs text-muted-foreground flex items-start gap-2">
               <ShieldCheck className="h-4 w-4 text-green-600 shrink-0 mt-0.5" />
-              <span>Payments processed securely by Square. Your card info is never stored on our servers.</span>
+              <span>
+                {isCodSelected
+                  ? "Your order details are securely recorded. Pay cash upon delivery."
+                  : "Payments processed securely by Square. Your card info is never stored on our servers."}
+              </span>
             </div>
           </div>
         </div>
