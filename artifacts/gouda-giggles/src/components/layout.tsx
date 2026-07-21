@@ -225,6 +225,10 @@ function Footer() {
             <a href={CONTACT.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" className="hover:text-primary transition-colors"><IconWhatsApp /></a>
           </div>
         </div>
+        <div className="mt-4 text-center text-xs text-secondary-foreground/40">
+          Developed by Shakir Hussain &mdash; Call/WhatsApp{" "}
+          <a href="https://wa.me/923059494585" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">+92-305-9494585</a>
+        </div>
       </div>
     </footer>
   );
