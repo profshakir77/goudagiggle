@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout, useAdminAuth } from "@/components/admin-layout";
 import { Plus, Pencil, Trash2, ImageUp, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/admin-fetch";
 
 const CATEGORIES = [
   "Charcuterie Board",
@@ -28,15 +29,6 @@ function getImageSrc(imageUrl: string | null): string {
   if (!imageUrl) return "/images/cat-charcuterie-board.webp";
   if (imageUrl.startsWith("/objects/")) return `/api/storage${imageUrl}`;
   return imageUrl;
-}
-
-async function apiFetch(url: string, options?: RequestInit) {
-  const res = await fetch(url, { credentials: "include", ...options });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed: ${res.status}`);
-  }
-  return res.json();
 }
 
 const emptyForm = {

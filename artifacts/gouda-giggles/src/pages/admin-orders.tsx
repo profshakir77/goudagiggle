@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout, useAdminAuth } from "@/components/admin-layout";
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { apiFetch } from "@/lib/admin-fetch";
 
 type OrderItem = { productId: number; name: string; quantity: number; price: string };
 
@@ -35,15 +36,6 @@ const PAYMENT_STYLES: Record<string, string> = {
   cod:  "bg-orange-50 text-orange-700",
   card: "bg-sky-50 text-sky-700",
 };
-
-async function apiFetch(url: string, options?: RequestInit) {
-  const res = await fetch(url, { credentials: "include", ...options });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed: ${res.status}`);
-  }
-  return res.json();
-}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {

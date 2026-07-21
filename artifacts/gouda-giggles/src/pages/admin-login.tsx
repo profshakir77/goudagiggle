@@ -7,6 +7,8 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const sessionExpired = new URLSearchParams(window.location.search).get("expired") === "1";
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -40,6 +42,12 @@ export default function AdminLogin() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {sessionExpired && (
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 px-3 py-2 rounded-lg">
+              Session expired — please log in again.
+            </p>
+          )}
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1.5">
               Password
