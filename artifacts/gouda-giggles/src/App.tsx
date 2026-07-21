@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +15,9 @@ const Gallery = lazy(() => import("@/pages/gallery"));
 const Quote = lazy(() => import("@/pages/quote"));
 const OrderConfirmation = lazy(() => import("@/pages/order-confirmation"));
 const NotFound = lazy(() => import("@/pages/not-found"));
+const AdminLogin = lazy(() => import("@/pages/admin-login"));
+const AdminProducts = lazy(() => import("@/pages/admin-products"));
+const AdminOrders = lazy(() => import("@/pages/admin-orders"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +37,25 @@ function PageFallback() {
 }
 
 function Router() {
+  const [location] = useLocation();
+  const isAdmin = location.startsWith("/admin");
+
+  if (isAdmin) {
+    return (
+      <Suspense fallback={<PageFallback />}>
+        <Switch>
+          <Route path="/admin/login" component={AdminLogin} />
+          <Route path="/admin/products" component={AdminProducts} />
+          <Route path="/admin/orders" component={AdminOrders} />
+          <Route path="/admin">
+            {() => { window.location.replace("/admin/products"); return null; }}
+          </Route>
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
+    );
+  }
+
   return (
     <Layout>
       <Suspense fallback={<PageFallback />}>
