@@ -4,6 +4,7 @@ import { db, ordersTable, productsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { CreatePaymentBody } from "@workspace/api-zod";
 import { randomUUID } from "crypto";
+import { sendOrderNotificationEmail } from "../lib/email.js";
 
 const router = Router();
 
@@ -58,6 +59,19 @@ router.post("/", async (req, res) => {
           items: data.items,
         })
         .returning();
+
+      // Send business notification email (fire-and-forget; don't block the response)
+      sendOrderNotificationEmail({
+        orderNumber: order.id,
+        customerName: order.customerName,
+        customerPhone: order.customerPhone ?? "",
+        customerEmail: order.customerEmail ?? "",
+        deliveryAddress: order.deliveryAddress ?? "",
+        eventDate: order.eventDate ?? "",
+        total: order.total,
+        specialInstructions: order.specialInstructions,
+        paymentMethod: "cod",
+      }).catch((err) => req.log.error({ err }, "Failed to send COD order notification email"));
 
       res.status(201).json({
         ...order,
