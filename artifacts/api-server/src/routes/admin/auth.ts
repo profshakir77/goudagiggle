@@ -1,10 +1,20 @@
 import { Router, type Request, type Response } from "express";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import { adminAuth } from "../../middlewares/adminAuth.js";
 
 const router = Router();
 
-router.post("/login", (req: Request, res: Response) => {
+const loginRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 10,
+  standardHeaders: "draft-8",
+  legacyHeaders: false,
+  message: { error: "Too many login attempts. Please try again in 15 minutes." },
+  skipSuccessfulRequests: true,
+});
+
+router.post("/login", loginRateLimit, (req: Request, res: Response) => {
   const { password } = req.body;
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword || password !== adminPassword) {
