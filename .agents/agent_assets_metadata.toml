@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "Hsiix1EDoHGQQDClz3jEZ"
@@ -90,3 +89,15 @@ id = "RJ56-U36Wsq4_AkxdCo9k"
 uri = "file://artifacts/gouda-giggles/public/images/cat-chocolates.png"
 type = "image"
 title = "generated_image"
+
+[[outputs]]
+id = "U-_oFZpsea5mNtEOg0tmW"
+uri = "file://screenshots/shakir-dev-thumbnail-1.jpg"
+type = "image"
+title = "Thumbnail 1 — Developer Profile (LinkedIn & Facebook)"
+
+[[outputs]]
+id = "6LuHDH9a_ODEVPHTcbTwY"
+uri = "file://screenshots/shakir-dev-thumbnail-2.jpg"
+type = "image"
+title = "Thumbnail 2 — Freelance Portfolio (LinkedIn & Facebook)"
