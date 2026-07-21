@@ -199,9 +199,9 @@ function Footer() {
           <div>
             <h4 className="font-serif font-bold text-primary text-lg mb-4">Quick Links</h4>
             <ul className="space-y-2">
-              <li><Link href="/shop" className="text-secondary-foreground/80 hover:text-primary transition-colors">Shop Charcuterie Boards</Link></li>
-              <li><Link href="/shop?category=Grazing+Tables" className="text-secondary-foreground/80 hover:text-primary transition-colors">Grazing Tables</Link></li>
-              <li><Link href="/shop?category=Workshops" className="text-secondary-foreground/80 hover:text-primary transition-colors">Workshops</Link></li>
+              <li><Link href="/shop?category=Charcuterie+Board" className="text-secondary-foreground/80 hover:text-primary transition-colors">Shop Charcuterie Boards</Link></li>
+              <li><Link href="/shop?category=Fruit+Platters" className="text-secondary-foreground/80 hover:text-primary transition-colors">Fruit Platters</Link></li>
+              <li><Link href="/quote" className="text-secondary-foreground/80 hover:text-primary transition-colors">Grazing Tables &amp; Workshops</Link></li>
               <li><Link href="/gallery" className="text-secondary-foreground/80 hover:text-primary transition-colors">Gallery</Link></li>
               <li><Link href="/quote" className="text-secondary-foreground/80 hover:text-primary transition-colors">Request an Event Quote</Link></li>
             </ul>

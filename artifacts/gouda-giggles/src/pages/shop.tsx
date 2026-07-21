@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useSearch, useLocation } from "wouter";
+import { Link, useSearch } from "wouter";
 import { useListProducts } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,20 +19,11 @@ export default function Shop() {
     const cat = new URLSearchParams(search).get("category") ?? "All";
     setActiveCategory(CATEGORIES.includes(cat) ? cat : "All");
   }, [search]);
-  const [, navigate] = useLocation();
+
   const { data: products, isLoading } = useListProducts(
     activeCategory !== "All" ? { category: activeCategory } : {}
   );
   const { addToCart } = useCart();
-
-  const handleCategoryChange = (cat: string) => {
-    setActiveCategory(cat);
-    if (cat === "All") {
-      navigate("/shop");
-    } else {
-      navigate(`/shop?category=${encodeURIComponent(cat)}`);
-    }
-  };
 
   return (
     <div className="container mx-auto px-4 py-12">
@@ -48,9 +39,11 @@ export default function Shop() {
             key={cat}
             variant={activeCategory === cat ? "default" : "outline"}
             className="rounded-full"
-            onClick={() => handleCategoryChange(cat)}
+            asChild
           >
-            {cat}
+            <Link href={cat === "All" ? "/shop" : `/shop?category=${encodeURIComponent(cat)}`}>
+              {cat}
+            </Link>
           </Button>
         ))}
       </div>
