@@ -2,6 +2,7 @@ import { Router } from "express";
 import { db, ordersTable, productsTable } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 import { CreateOrderBody, GetOrderParams } from "@workspace/api-zod";
+import { adminAuth } from "../middlewares/adminAuth.js";
 
 const router = Router();
 
@@ -50,7 +51,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", adminAuth, async (req, res) => {
   try {
     const rows = await db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt));
     res.json(
@@ -66,7 +67,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.patch("/:id/mark-paid", async (req, res) => {
+router.patch("/:id/mark-paid", adminAuth, async (req, res) => {
   try {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) {
