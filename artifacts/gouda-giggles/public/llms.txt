@@ -1,0 +1,34 @@
+# Gouda Giggles
+
+## Business Description
+Gouda Giggles is a local charcuterie and grazing board company based in Latham, NY, serving the greater Capital Region of New York (Albany, Troy, Schenectady, and surrounding areas). We craft beautiful, fresh charcuterie boards, grazing tables, charcuterie cups, fruit platters, and grab-and-go snack boxes for events of all sizes — from intimate date nights to corporate gatherings, weddings, and holiday parties.
+
+## Canonical Domain
+https://goudagiggles.com
+
+## Sitemap
+https://goudagiggles.com/sitemap.xml
+
+## Important Pages
+
+- / — Homepage: brand introduction, featured products, and event categories
+- /shop — Full product catalog: charcuterie boards, cups, fruit platters, grab-and-go boxes, and add-ons with pricing
+- /gallery — Photo gallery of past boards and event setups
+- /quote — Custom order and event quote request form
+- /product/1 — Small Charcuterie Board (serves 2–4 guests, $85)
+- /product/2 — Medium Charcuterie Board (serves 6–10 guests, $150)
+- /product/3 — Large Charcuterie Board (serves 12–20 guests, $220)
+- /product/4 — Grab & Go Small snack box (1 person, $20)
+- /product/5 — Grab & Go Large snack box (1–2 persons, $36)
+- /product/6 — Classic Charcuterie Cup (1 person, $13.50)
+- /product/7 — Premium Charcuterie Cup (1 person, $20.50)
+- /product/8 — Small Fruit Platter (serves 6–10 guests, $75)
+- /product/9 — Medium Fruit Platter (serves 12–16 guests, $125)
+- /product/10 — Large Fruit Platter (serves 18–24 guests, $165)
+- /product/11 — Chocolate Add-On ($15)
+
+## Service Area
+Latham, Albany, Troy, Schenectady, and the Capital Region of New York State.
+
+## Contact / Orders
+Use the /quote page to request a custom order or event quote, or order directly through the /shop page.
