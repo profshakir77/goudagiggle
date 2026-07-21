@@ -30,9 +30,15 @@ router.post("/", async (req, res) => {
     let totalCents = 0;
     for (const item of data.items) {
       const rows = await db.select().from(productsTable).where(eq(productsTable.id, item.productId));
-      if (rows.length > 0) {
-        totalCents += Math.round(parseFloat(rows[0].price) * 100) * item.quantity;
+      if (rows.length === 0) {
+        res.status(400).json({ error: `Product not found: ${item.productId}` });
+        return;
       }
+      if (!rows[0].inStock) {
+        res.status(400).json({ error: `Product is out of stock: ${rows[0].name}` });
+        return;
+      }
+      totalCents += Math.round(parseFloat(rows[0].price) * 100) * item.quantity;
     }
 
     if (paymentMethod === "cod") {
