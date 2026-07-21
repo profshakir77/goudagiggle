@@ -151,7 +151,7 @@ function Footer() {
           <div className="md:col-span-2">
             <img src="/images/logo.webp" alt="Gouda Giggles Charcuterie" className="h-16 w-auto mb-4" loading="lazy" width="180" height="64" />
             <p className="mt-2 text-secondary-foreground/80 max-w-sm">
-              Crafting joyful, artisanal charcuterie boards and grazing tables for Latham, NY and the Capital Region's most memorable moments.
+              Crafting Joyful, Artisanal Charcuterie Boards And Grazing Tables For Latham, NY And The Capital Region's Most Memorable Moments.
             </p>
             <div className="mt-4 flex flex-col gap-2 text-sm text-secondary-foreground/70">
               <a href={`tel:${CONTACT.phoneRaw}`} className="flex items-center gap-2 hover:text-primary transition-colors">
@@ -207,7 +207,7 @@ function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-serif font-bold text-primary text-lg mb-4">Service Area</h4>
+            <h4 className="font-serif font-bold text-primary text-lg mb-4">Serving</h4>
             <ul className="space-y-2 text-secondary-foreground/80 text-sm">
               <li>Latham, NY</li>
               <li>Albany, NY</li>

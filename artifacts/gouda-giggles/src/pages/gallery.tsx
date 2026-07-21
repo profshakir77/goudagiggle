@@ -8,7 +8,7 @@ export default function Gallery() {
     <div className="container mx-auto px-4 py-16">
       <div className="text-center max-w-2xl mx-auto mb-16">
         <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary">Our Gallery</h1>
-        <p className="mt-4 text-muted-foreground text-lg">A visual feast of our favorite creations, from intimate date nights to massive wedding grazing tables.</p>
+        <p className="mt-4 text-muted-foreground text-lg">A Visual Feast Of Our Favorite Creations, From Intimate Date Nights To Massive Wedding Grazing Tables.</p>
       </div>
 
       <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
