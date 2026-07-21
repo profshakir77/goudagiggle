@@ -53,13 +53,32 @@ router.post("/", async (req, res) => {
 
 router.get("/", adminAuth, async (req, res) => {
   try {
-    const rows = await db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt));
+    const [rows, products] = await Promise.all([
+      db.select().from(ordersTable).orderBy(desc(ordersTable.createdAt)),
+      db.select().from(productsTable),
+    ]);
+
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
     res.json(
-      rows.map((order) => ({
-        ...order,
-        total: parseFloat(order.total),
-        createdAt: order.createdAt.toISOString(),
-      }))
+      rows.map((order) => {
+        const rawItems = Array.isArray(order.items) ? order.items as { productId: number; quantity: number; name?: string; price?: string }[] : [];
+        const enrichedItems = rawItems.map((item) => {
+          const product = productMap.get(item.productId);
+          return {
+            productId: item.productId,
+            quantity: item.quantity,
+            name: item.name ?? product?.name ?? `Product #${item.productId}`,
+            price: item.price ?? product?.price ?? "0",
+          };
+        });
+        return {
+          ...order,
+          items: enrichedItems,
+          total: parseFloat(order.total),
+          createdAt: order.createdAt.toISOString(),
+        };
+      })
     );
   } catch (err) {
     req.log.error({ err }, "Failed to list orders");
