@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart-context";
 import { ShoppingBag } from "lucide-react";
+import { PageMeta } from "@/lib/page-meta";
 
 const CATEGORIES = ["All", "Charcuterie Board", "Grab & Go", "Charcuterie Cups", "Fruit Platters", "Add-Ons"];
 
@@ -27,6 +28,17 @@ export default function Shop() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <PageMeta
+        title="Order Charcuterie Boards Online | Gouda Giggles | Latham, NY"
+        description="Browse and order artisanal charcuterie boards, grab-and-go cups, fruit platters, and add-ons from Gouda Giggles in Latham, NY. Fresh, made-to-order, delivered across the Capital Region."
+        canonical="https://www.goudagiggles.com/shop"
+        ogTitle="Shop Charcuterie Boards | Gouda Giggles | Latham, NY"
+        ogDescription="Order small, medium, or large charcuterie boards and grazing platters online. Delivered fresh across Albany, Schenectady, Troy & Latham, NY."
+        ogImage="https://www.goudagiggles.com/images/product-1.png"
+        twitterTitle="Order Charcuterie Boards | Gouda Giggles"
+        twitterDescription="Fresh, made-to-order charcuterie boards for delivery across the Capital Region, NY. Shop online now."
+        twitterImage="https://www.goudagiggles.com/images/product-1.png"
+      />
       <div className="text-center max-w-2xl mx-auto mb-12">
         <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary">Our Menu</h1>
         <p className="mt-4 text-muted-foreground">Order online for local delivery or pickup. For grazing tables and large events, please request a quote.</p>

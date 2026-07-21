@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/lib/cart-context";
 import { Minus, Plus, ShoppingBag, ArrowLeft } from "lucide-react";
+import { PageMeta } from "@/lib/page-meta";
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +42,34 @@ export default function ProductDetail() {
     );
   }
 
+  const productUrl = `https://www.goudagiggles.com/product/${product.id}`;
+  const productTitle = `${product.name} | Gouda Giggles Charcuterie`;
+  const productDescription = product.description
+    ? `${product.description} Order online from Gouda Giggles in Latham, NY.`
+    : `Order the ${product.name} from Gouda Giggles Charcuterie in Latham, NY. Fresh, handcrafted, and delivered across the Capital Region.`;
+
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description ?? productDescription,
+    ...(product.imageUrl ? { image: [product.imageUrl] } : {}),
+    category: product.category,
+    offers: {
+      "@type": "Offer",
+      price: product.price.toFixed(2),
+      priceCurrency: "USD",
+      availability: product.inStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
+      url: productUrl,
+      seller: {
+        "@type": "Organization",
+        name: "Gouda Giggles Charcuterie",
+      },
+    },
+  };
+
   const handleAddToCart = () => {
     addToCart(product, quantity);
     // Could add toast here
@@ -48,6 +77,19 @@ export default function ProductDetail() {
 
   return (
     <div className="container mx-auto px-4 py-12">
+      <PageMeta
+        title={productTitle}
+        description={productDescription}
+        canonical={productUrl}
+        ogTitle={product.name}
+        ogDescription={productDescription}
+        ogImage={product.imageUrl ?? undefined}
+        ogType="product"
+        twitterTitle={product.name}
+        twitterDescription={productDescription}
+        twitterImage={product.imageUrl ?? undefined}
+        jsonLd={productJsonLd}
+      />
       <Link href="/shop" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary mb-8 transition-colors">
         <ArrowLeft className="w-4 h-4 mr-2" /> Back to Shop
       </Link>

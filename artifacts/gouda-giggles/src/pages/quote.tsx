@@ -1,3 +1,4 @@
+import { PageMeta } from "@/lib/page-meta";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -79,6 +80,17 @@ export default function QuotePage() {
 
   return (
     <div className="container mx-auto px-4 py-16">
+      <PageMeta
+        title="Request a Grazing Table Quote | Gouda Giggles | Latham, NY"
+        description="Plan your dream grazing table with Gouda Giggles. Request a custom quote for weddings, corporate events, baby showers, and large celebrations across the Capital Region, NY."
+        canonical="https://www.goudagiggles.com/quote"
+        ogTitle="Book a Grazing Table | Gouda Giggles Charcuterie"
+        ogDescription="Planning something special? Request a custom grazing table quote for weddings, showers, and events. Serving Albany, Latham, Schenectady, Troy & surroundings."
+        ogImage="https://www.goudagiggles.com/images/product-4.webp"
+        twitterTitle="Grazing Table Quote | Gouda Giggles Charcuterie"
+        twitterDescription="Get a custom quote for your event's grazing table. Weddings, corporate events, showers & more across the Capital Region, NY."
+        twitterImage="https://www.goudagiggles.com/images/product-4.webp"
+      />
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary">Book a Grazing Table</h1>

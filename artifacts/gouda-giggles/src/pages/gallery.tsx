@@ -1,11 +1,23 @@
 import { useListGallery } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PageMeta } from "@/lib/page-meta";
 
 export default function Gallery() {
   const { data: images, isLoading } = useListGallery();
 
   return (
     <div className="container mx-auto px-4 py-16">
+      <PageMeta
+        title="Charcuterie Board Gallery | Gouda Giggles | Latham, NY"
+        description="Browse our gallery of handcrafted charcuterie boards, grazing tables, and dessert boards by Gouda Giggles. From intimate date nights to full wedding spreads in the Capital Region, NY."
+        canonical="https://www.goudagiggles.com/gallery"
+        ogTitle="Charcuterie Board Gallery | Gouda Giggles"
+        ogDescription="A visual feast of our favorite creations — charcuterie boards, grazing tables, and dessert boards for every occasion in Latham, Albany, Troy & Schenectady, NY."
+        ogImage="https://www.goudagiggles.com/images/gallery-1.webp"
+        twitterTitle="Gouda Giggles Gallery | Beautiful Charcuterie Boards"
+        twitterDescription="See the boards, grazing tables, and dessert spreads we've created for weddings, showers, and celebrations across the Capital Region."
+        twitterImage="https://www.goudagiggles.com/images/gallery-1.webp"
+      />
       <div className="text-center max-w-2xl mx-auto mb-16">
         <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary">Our Gallery</h1>
         <p className="mt-4 text-muted-foreground text-lg">A Visual Feast Of Our Favorite Creations, From Intimate Date Nights To Massive Wedding Grazing Tables.</p>

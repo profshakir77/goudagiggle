@@ -3,6 +3,7 @@ import { useGetFeaturedProducts, useListProducts } from "@workspace/api-client-r
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Star, ChevronRight, Heart, Leaf, Sparkles, Clock } from "lucide-react";
+import { PageMeta } from "@/lib/page-meta";
 
 const TESTIMONIALS = [
   {
@@ -68,6 +69,17 @@ export default function Home() {
 
   return (
     <div className="w-full">
+      <PageMeta
+        title="Gouda Giggles Charcuterie | Latham, NY | Boards, Grazing Tables & Workshops"
+        description="Gouda Giggles Charcuterie in Latham, NY creates artisanal charcuterie boards (small, medium, large), grazing tables, and workshops for Albany, Schenectady, Troy & the Capital Region. Order online!"
+        canonical="https://www.goudagiggles.com/"
+        ogTitle="Gouda Giggles Charcuterie | Latham, NY | Boards & Grazing Tables"
+        ogDescription="Artisanal charcuterie boards, grazing tables & workshops in Latham, NY. Serving Albany, Schenectady, Troy & the Capital Region. Order online!"
+        ogImage="https://www.goudagiggles.com/images/product-4.webp"
+        twitterTitle="Gouda Giggles Charcuterie | Latham, NY"
+        twitterDescription="Artisanal charcuterie boards & grazing tables for Latham, Albany, Schenectady & Troy, NY. Order online!"
+        twitterImage="https://www.goudagiggles.com/images/product-4.webp"
+      />
 
       {/* Hero Section — CSS animated, no JS library */}
       <section className="relative w-full overflow-hidden bg-secondary">
