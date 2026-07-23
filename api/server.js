@@ -152,17 +152,16 @@ app.post("/api/payments", async function(req, res) {
     if (!data.sourceId) return res.status(400).json({ error: "sourceId is required for card payments" });
     const locationId = process.env.SQUARE_LOCATION_ID;
     if (!locationId) return res.status(500).json({ error: "Square location not configured" });
-    // Lazy-load Square only when needed for card payments (ESM package — must use dynamic import)
-    const squareModule = await import("square");
-    const SquareClient = squareModule.Client || squareModule.default && squareModule.default.Client;
-    const squareEnv = process.env.SQUARE_ENVIRONMENT === "production" ? "production" : "sandbox";
-    const client = new SquareClient({ accessToken: process.env.SQUARE_ACCESS_TOKEN, environment: squareEnv });
-    const paymentResult = await client.paymentsApi.createPayment({
+    // Square SDK v44: SquareClient + payments.create() — response is { payment: {...} }
+    const { SquareClient, SquareEnvironment } = require("square");
+    const squareEnv = process.env.SQUARE_ENVIRONMENT === "production" ? SquareEnvironment.Production : SquareEnvironment.Sandbox;
+    const client = new SquareClient({ token: process.env.SQUARE_ACCESS_TOKEN, environment: squareEnv });
+    const paymentResult = await client.payments.create({
       sourceId: data.sourceId, idempotencyKey: randomUUID(),
       amountMoney: { amount: BigInt(totalCents), currency: "USD" },
       locationId, note: "Gouda Giggles order for " + data.customerName, buyerEmailAddress: data.customerEmail,
     });
-    if (paymentResult.result.payment && paymentResult.result.payment.status !== "COMPLETED") {
+    if (!paymentResult.payment || paymentResult.payment.status !== "COMPLETED") {
       return res.status(402).json({ error: "Payment was not completed" });
     }
     const [order] = await db.insert(ordersTable).values({
@@ -171,7 +170,7 @@ app.post("/api/payments", async function(req, res) {
       deliveryAddress: data.deliveryAddress || "", specialInstructions: data.specialInstructions || null,
       status: "paid", paymentMethod: "card", total: (totalCents / 100).toFixed(2), items: data.items,
     }).returning();
-    res.status(201).json(Object.assign({}, order, { total: parseFloat(order.total), createdAt: order.createdAt.toISOString(), squarePaymentId: paymentResult.result.payment.id }));
+    res.status(201).json(Object.assign({}, order, { total: parseFloat(order.total), createdAt: order.createdAt.toISOString(), squarePaymentId: paymentResult.payment.id }));
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Payment failed" });
   }
