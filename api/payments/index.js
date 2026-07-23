@@ -10,18 +10,55 @@ export default async function handler(req, res) {
   try {
     const db = getDb();
     const data = req.body;
-    if (!data.sourceId || !data.customerName || !data.customerEmail || !Array.isArray(data.items)) {
+
+    if (!data.customerName || !data.customerEmail || !Array.isArray(data.items) || data.items.length === 0) {
       return res.status(400).json({ error: "Invalid payment data" });
+    }
+
+    const paymentMethod = data.paymentMethod ?? "card";
+
+    // Calculate total from DB prices — never trust the client
+    let totalCents = 0;
+    for (const item of data.items) {
+      const rows = await db.select().from(productsTable).where(eq(productsTable.id, item.productId));
+      if (rows.length === 0) {
+        return res.status(400).json({ error: `Product not found: ${item.productId}` });
+      }
+      if (!rows[0].inStock) {
+        return res.status(400).json({ error: `Product is out of stock: ${rows[0].name}` });
+      }
+      totalCents += Math.round(parseFloat(rows[0].price) * 100) * item.quantity;
+    }
+
+    if (paymentMethod === "cod") {
+      // Cash on Delivery — skip Square, create order as pending
+      const [order] = await db.insert(ordersTable).values({
+        customerName: data.customerName,
+        customerEmail: data.customerEmail,
+        customerPhone: data.customerPhone ?? "",
+        eventDate: data.eventDate ?? "",
+        deliveryAddress: data.deliveryAddress ?? "",
+        specialInstructions: data.specialInstructions ?? null,
+        status: "pending",
+        paymentMethod: "cod",
+        total: (totalCents / 100).toFixed(2),
+        items: data.items,
+      }).returning();
+
+      return res.status(201).json({
+        ...order,
+        total: parseFloat(order.total),
+        createdAt: order.createdAt.toISOString(),
+      });
+    }
+
+    // Card payment — Square flow
+    if (!data.sourceId) {
+      return res.status(400).json({ error: "sourceId is required for card payments" });
     }
 
     const locationId = process.env.SQUARE_LOCATION_ID;
     if (!locationId) return res.status(500).json({ error: "Square location not configured" });
-
-    let totalCents = 0;
-    for (const item of data.items) {
-      const rows = await db.select().from(productsTable).where(eq(productsTable.id, item.productId));
-      if (rows.length > 0) totalCents += Math.round(parseFloat(rows[0].price) * 100) * item.quantity;
-    }
 
     const env = process.env.SQUARE_ENVIRONMENT === "production" ? Environment.Production : Environment.Sandbox;
     const client = new Client({ accessToken: process.env.SQUARE_ACCESS_TOKEN, environment: env });
@@ -44,11 +81,12 @@ export default async function handler(req, res) {
     const [order] = await db.insert(ordersTable).values({
       customerName: data.customerName,
       customerEmail: data.customerEmail,
-      customerPhone: data.customerPhone ?? null,
-      eventDate: data.eventDate ?? null,
-      deliveryAddress: data.deliveryAddress ?? null,
+      customerPhone: data.customerPhone ?? "",
+      eventDate: data.eventDate ?? "",
+      deliveryAddress: data.deliveryAddress ?? "",
       specialInstructions: data.specialInstructions ?? null,
       status: "paid",
+      paymentMethod: "card",
       total: (totalCents / 100).toFixed(2),
       items: data.items,
     }).returning();

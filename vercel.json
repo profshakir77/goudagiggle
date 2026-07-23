@@ -4,13 +4,25 @@
   "installCommand": "pnpm install --no-frozen-lockfile",
   "framework": null,
   "rewrites": [
+    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/api/stats", "destination": "/api/stats/index" },
+    { "source": "/api/gallery", "destination": "/api/gallery/index" },
+    { "source": "/api/quotes", "destination": "/api/quotes/index" },
     { "source": "/api/products/featured", "destination": "/api/products/featured" },
     { "source": "/api/products/:id", "destination": "/api/products/[id]" },
     { "source": "/api/products", "destination": "/api/products/index" },
     { "source": "/api/payments", "destination": "/api/payments/index" },
     { "source": "/api/orders/:id", "destination": "/api/orders/[id]" },
     { "source": "/api/orders", "destination": "/api/orders/index" },
-    { "source": "/api/health", "destination": "/api/health" },
+    { "source": "/api/admin/auth/login", "destination": "/api/admin/auth/login" },
+    { "source": "/api/admin/auth/logout", "destination": "/api/admin/auth/logout" },
+    { "source": "/api/admin/auth/me", "destination": "/api/admin/auth/me" },
+    { "source": "/api/admin/orders/:id/status", "destination": "/api/admin/orders/[id]/status" },
+    { "source": "/api/admin/orders/:id", "destination": "/api/admin/orders/[id]" },
+    { "source": "/api/admin/orders", "destination": "/api/admin/orders/index" },
+    { "source": "/api/admin/products/:id/stock", "destination": "/api/admin/products/[id]/stock" },
+    { "source": "/api/admin/products/:id", "destination": "/api/admin/products/[id]" },
+    { "source": "/api/admin/products", "destination": "/api/admin/products/index" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

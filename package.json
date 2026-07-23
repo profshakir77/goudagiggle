@@ -11,6 +11,7 @@
   "private": true,
   "dependencies": {
     "drizzle-orm": "^0.43.1",
+    "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "square": "^44.1.0"
   },
