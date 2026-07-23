@@ -11,13 +11,6 @@
     { "source": "/api/orders/:id", "destination": "/api/orders/[id]" },
     { "source": "/api/orders", "destination": "/api/orders/index" },
     { "source": "/api/health", "destination": "/api/health" },
-    { "source": "/", "destination": "/index.html" },
-    { "source": "/shop", "destination": "/index.html" },
-    { "source": "/product/:id", "destination": "/index.html" },
-    { "source": "/cart", "destination": "/index.html" },
-    { "source": "/order", "destination": "/index.html" },
-    { "source": "/gallery", "destination": "/index.html" },
-    { "source": "/quote", "destination": "/index.html" },
-    { "source": "/order-confirmation/:id", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
