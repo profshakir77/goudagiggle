@@ -56,7 +56,11 @@ export const quotesTable = pgTable("quotes", {
 let _db;
 export function getDb() {
   if (!_db) {
-    const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    const url = process.env.DATABASE_URL ?? "";
+    const ssl = url.includes("sslmode=disable")
+      ? false
+      : { rejectUnauthorized: false };
+    const pool = new Pool({ connectionString: url, ssl });
     _db = drizzle(pool, { schema: { productsTable, ordersTable, galleryTable, quotesTable } });
   }
   return _db;
