@@ -1,11 +1,11 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import {
+"use strict";
+const { drizzle } = require("drizzle-orm/node-postgres");
+const {
   pgTable, serial, text, boolean, numeric, jsonb, timestamp, integer,
-} from "drizzle-orm/pg-core";
-import pkg from "pg";
-const { Pool } = pkg;
+} = require("drizzle-orm/pg-core");
+const { Pool } = require("pg");
 
-export const productsTable = pgTable("products", {
+const productsTable = pgTable("products", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description").notNull(),
@@ -18,7 +18,7 @@ export const productsTable = pgTable("products", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const ordersTable = pgTable("orders", {
+const ordersTable = pgTable("orders", {
   id: serial("id").primaryKey(),
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
@@ -33,7 +33,7 @@ export const ordersTable = pgTable("orders", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const galleryTable = pgTable("gallery", {
+const galleryTable = pgTable("gallery", {
   id: serial("id").primaryKey(),
   url: text("url").notNull(),
   caption: text("caption").notNull(),
@@ -41,7 +41,7 @@ export const galleryTable = pgTable("gallery", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const quotesTable = pgTable("quotes", {
+const quotesTable = pgTable("quotes", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: text("email").notNull(),
@@ -54,14 +54,14 @@ export const quotesTable = pgTable("quotes", {
 });
 
 let _db;
-export function getDb() {
+function getDb() {
   if (!_db) {
-    const url = process.env.DATABASE_URL ?? "";
-    const ssl = url.includes("sslmode=disable")
-      ? false
-      : { rejectUnauthorized: false };
+    const url = process.env.DATABASE_URL || "";
+    const ssl = url.includes("sslmode=disable") ? false : { rejectUnauthorized: false };
     const pool = new Pool({ connectionString: url, ssl });
     _db = drizzle(pool, { schema: { productsTable, ordersTable, galleryTable, quotesTable } });
   }
   return _db;
 }
+
+module.exports = { getDb, productsTable, ordersTable, galleryTable, quotesTable };
