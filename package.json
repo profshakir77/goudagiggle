@@ -10,7 +10,9 @@
   },
   "private": true,
   "dependencies": {
+    "cookie-parser": "^1.4.7",
     "drizzle-orm": "^0.43.1",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "square": "^44.1.0"
