@@ -152,10 +152,11 @@ app.post("/api/payments", async function(req, res) {
     if (!data.sourceId) return res.status(400).json({ error: "sourceId is required for card payments" });
     const locationId = process.env.SQUARE_LOCATION_ID;
     if (!locationId) return res.status(500).json({ error: "Square location not configured" });
-    // Lazy-load Square only when needed for card payments
-    const { Client, Environment } = require("square");
-    const env = process.env.SQUARE_ENVIRONMENT === "production" ? Environment.Production : Environment.Sandbox;
-    const client = new Client({ accessToken: process.env.SQUARE_ACCESS_TOKEN, environment: env });
+    // Lazy-load Square only when needed for card payments (ESM package — must use dynamic import)
+    const squareModule = await import("square");
+    const SquareClient = squareModule.Client || squareModule.default && squareModule.default.Client;
+    const squareEnv = process.env.SQUARE_ENVIRONMENT === "production" ? "production" : "sandbox";
+    const client = new SquareClient({ accessToken: process.env.SQUARE_ACCESS_TOKEN, environment: squareEnv });
     const paymentResult = await client.paymentsApi.createPayment({
       sourceId: data.sourceId, idempotencyKey: randomUUID(),
       amountMoney: { amount: BigInt(totalCents), currency: "USD" },
