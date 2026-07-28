@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const { randomUUID } = require("crypto");
 const { eq, desc, and, sql } = require("drizzle-orm");
 const { getDb, productsTable, ordersTable, galleryTable, quotesTable } = require("./_db.js");
+const { sendOrderNotificationEmail, sendCustomerStatusEmail } = require("./_email.js");
 
 const app = express();
 app.use(express.json());
@@ -109,6 +110,15 @@ app.post("/api/orders", async function(req, res) {
       deliveryAddress: data.deliveryAddress || "", specialInstructions: data.specialInstructions || null,
       status: "pending", paymentMethod: "cod", total: (totalCents / 100).toFixed(2), items: data.items,
     }).returning();
+
+    // Fire-and-forget notification emails — don't let a failure block the order.
+    try {
+      await sendOrderNotificationEmail(order);
+      await sendCustomerStatusEmail(order, "pending");
+    } catch (emailErr) {
+      console.error("Order confirmation email failed:", emailErr);
+    }
+
     res.status(201).json(Object.assign({}, order, { total: parseFloat(order.total), createdAt: order.createdAt.toISOString() }));
   } catch (err) { res.status(500).json({ error: "Failed to create order" }); }
 });
@@ -147,6 +157,12 @@ app.post("/api/payments", async function(req, res) {
         deliveryAddress: data.deliveryAddress || "", specialInstructions: data.specialInstructions || null,
         status: "pending", paymentMethod: "cod", total: (totalCents / 100).toFixed(2), items: data.items,
       }).returning();
+      try {
+        await sendOrderNotificationEmail(order);
+        await sendCustomerStatusEmail(order, "pending");
+      } catch (emailErr) {
+        console.error("Order confirmation email failed:", emailErr);
+      }
       return res.status(201).json(Object.assign({}, order, { total: parseFloat(order.total), createdAt: order.createdAt.toISOString() }));
     }
     if (!data.sourceId) return res.status(400).json({ error: "sourceId is required for card payments" });
@@ -170,6 +186,14 @@ app.post("/api/payments", async function(req, res) {
       deliveryAddress: data.deliveryAddress || "", specialInstructions: data.specialInstructions || null,
       status: "paid", paymentMethod: "card", total: (totalCents / 100).toFixed(2), items: data.items,
     }).returning();
+
+    try {
+      await sendOrderNotificationEmail(order);
+      await sendCustomerStatusEmail(order, "paid");
+    } catch (emailErr) {
+      console.error("Order confirmation email failed:", emailErr);
+    }
+
     res.status(201).json(Object.assign({}, order, { total: parseFloat(order.total), createdAt: order.createdAt.toISOString(), squarePaymentId: paymentResult.payment.id }));
   } catch (err) {
     res.status(500).json({ error: err instanceof Error ? err.message : "Payment failed" });
@@ -234,8 +258,22 @@ app.patch("/api/admin/orders/:id/status", async function(req, res) {
     const VALID = ["pending", "confirmed", "paid", "completed", "cancelled"];
     const status = (req.body || {}).status;
     if (!VALID.includes(status)) return res.status(400).json({ error: "Status must be one of: " + VALID.join(", ") });
+
+    const [existing] = await db.select().from(ordersTable).where(eq(ordersTable.id, id));
+    if (!existing) return res.status(404).json({ error: "Order not found" });
+    const statusChanged = existing.status !== status;
+
     const [updated] = await db.update(ordersTable).set({ status }).where(eq(ordersTable.id, id)).returning();
     if (!updated) return res.status(404).json({ error: "Order not found" });
+
+    if (statusChanged) {
+      try {
+        await sendCustomerStatusEmail(updated, status);
+      } catch (emailErr) {
+        console.error("Status update email failed:", emailErr);
+      }
+    }
+
     res.json(Object.assign({}, updated, { total: parseFloat(updated.total), createdAt: updated.createdAt.toISOString() }));
   } catch (err) { res.status(500).json({ error: "Failed to update order status" }); }
 });
