@@ -3,6 +3,9 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { randomUUID } = require("crypto");
+const { Readable } = require("stream");
+const multer = require("multer");
+const { Client: FtpClient } = require("basic-ftp");
 const { eq, desc, and, sql } = require("drizzle-orm");
 const { getDb, productsTable, ordersTable, galleryTable, quotesTable } = require("./_db.js");
 const { sendOrderNotificationEmail, sendCustomerStatusEmail } = require("./_email.js");
@@ -10,6 +13,8 @@ const { sendOrderNotificationEmail, sendCustomerStatusEmail } = require("./_emai
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 8 * 1024 * 1024 } });
 
 // ─── Auth helper ────────────────────────────────────────────────────────────
 function requireAdmin(req, res) {
@@ -276,6 +281,53 @@ app.patch("/api/admin/orders/:id/status", async function(req, res) {
 
     res.json(Object.assign({}, updated, { total: parseFloat(updated.total), createdAt: updated.createdAt.toISOString() }));
   } catch (err) { res.status(500).json({ error: "Failed to update order status" }); }
+});
+
+// ─── Admin Storage (Namecheap FTP) ────────────────────────────────────────────
+// Uploads the file straight to Namecheap shared hosting over FTP and returns
+// its public URL. Requires these env vars to be set in the Vercel project:
+//   FTP_HOST         e.g. ftp.goudagiggles.com
+//   FTP_USER         the FTP account username
+//   FTP_PASSWORD     the FTP account password
+//   FTP_UPLOAD_DIR   remote folder to upload into, e.g. /public_html/uploads
+//   IMAGES_BASE_URL  the public URL that folder is served from, e.g.
+//                    https://goudagiggles.com/uploads
+//   FTP_SECURE       optional, "true" to use explicit FTPS (default: plain FTP)
+app.post("/api/admin/storage/upload", function(req, res, next) {
+  if (!requireAdmin(req, res)) return;
+  next();
+}, upload.single("file"), async function(req, res) {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+    const host = process.env.FTP_HOST;
+    const user = process.env.FTP_USER;
+    const password = process.env.FTP_PASSWORD;
+    const remoteDir = process.env.FTP_UPLOAD_DIR;
+    const publicBase = process.env.IMAGES_BASE_URL;
+    if (!host || !user || !password || !remoteDir || !publicBase) {
+      return res.status(500).json({ error: "Image storage is not configured (missing FTP_HOST / FTP_USER / FTP_PASSWORD / FTP_UPLOAD_DIR / IMAGES_BASE_URL env vars)" });
+    }
+
+    const extMatch = /\.([a-zA-Z0-9]+)$/.exec(req.file.originalname || "");
+    const ext = (extMatch ? extMatch[1] : "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
+    const filename = randomUUID() + "." + ext;
+
+    const client = new FtpClient();
+    client.ftp.verbose = false;
+    try {
+      await client.access({ host, user, password, secure: process.env.FTP_SECURE === "true" });
+      await client.ensureDir(remoteDir);
+      await client.uploadFrom(Readable.from(req.file.buffer), filename);
+    } finally {
+      client.close();
+    }
+
+    const url = publicBase.replace(/\/$/, "") + "/" + filename;
+    res.json({ url });
+  } catch (err) {
+    console.error("Image upload failed:", err);
+    res.status(500).json({ error: "Failed to upload image to storage" });
+  }
 });
 
 // ─── Admin Products ───────────────────────────────────────────────────────────
