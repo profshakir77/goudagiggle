@@ -131,17 +131,13 @@ export default function AdminProducts() {
   async function handleImageUpload(file: File) {
     setUploadState("uploading");
     try {
-      const meta = await apiFetch("/api/admin/storage/request-url", {
+      const formData = new FormData();
+      formData.append("file", file);
+      const { url } = await apiFetch("/api/admin/storage/upload", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+        body: formData,
       });
-      await fetch(meta.uploadURL, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-      setForm((f) => ({ ...f, imageUrl: meta.objectPath }));
+      setForm((f) => ({ ...f, imageUrl: url }));
       setUploadState("done");
     } catch {
       setUploadState("error");
