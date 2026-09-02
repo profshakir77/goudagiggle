@@ -398,4 +398,37 @@ app.delete("/api/admin/products/:id", async function(req, res) {
   } catch (err) { res.status(500).json({ error: "Failed to delete product" }); }
 });
 
+// ─── Admin Gallery ────────────────────────────────────────────────────────────
+app.get("/api/admin/gallery", async function(req, res) {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const db = getDb();
+    const rows = await db.select().from(galleryTable).orderBy(desc(galleryTable.id));
+    res.json(rows);
+  } catch (err) { res.status(500).json({ error: "Failed to fetch gallery" }); }
+});
+
+app.post("/api/admin/gallery", async function(req, res) {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const db = getDb();
+    const { url, caption, category } = req.body || {};
+    if (!url || !caption || !category) return res.status(400).json({ error: "url, caption, category are required" });
+    const [row] = await db.insert(galleryTable).values({ url, caption, category }).returning();
+    res.status(201).json(row);
+  } catch (err) { res.status(500).json({ error: "Failed to create gallery image" }); }
+});
+
+app.delete("/api/admin/gallery/:id", async function(req, res) {
+  if (!requireAdmin(req, res)) return;
+  try {
+    const db = getDb();
+    const id = Number(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid id" });
+    const [deleted] = await db.delete(galleryTable).where(eq(galleryTable.id, id)).returning();
+    if (!deleted) return res.status(404).json({ error: "Gallery image not found" });
+    res.json({ ok: true });
+  } catch (err) { res.status(500).json({ error: "Failed to delete gallery image" }); }
+});
+
 module.exports = app;
