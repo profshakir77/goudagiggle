@@ -51,6 +51,14 @@ const SERVICES = [
     cta: "Order Now",
     image: "/images/product-6.webp",
   },
+  {
+    icon: "✨",
+    title: "Charcuterie Cart",
+    description: "Bring the Gouda Giggles experience straight to your guests - an interactive, beautifully styled mobile cart with fresh charcuterie, sweets, and grab-and-go bites for any celebration.",
+    href: "/quote",
+    cta: "Inquire Now",
+    image: "/images/product-7.webp",
+  },
 ];
 
 const PROCESS = [
@@ -136,7 +144,7 @@ export default function Home() {
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-primary">What We Create</h2>
             <p className="mt-4 text-muted-foreground max-w-xl mx-auto">From intimate date nights to 50-person wedding grazing tables - we've got your celebration covered.</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {SERVICES.map((s) => (
               <Link key={s.title} href={s.href} className="group block bg-secondary rounded-2xl overflow-hidden hover:shadow-xl transition-shadow duration-300">
                 <div className="aspect-[4/3] overflow-hidden">
