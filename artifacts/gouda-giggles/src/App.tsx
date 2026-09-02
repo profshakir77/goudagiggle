@@ -18,6 +18,7 @@ const NotFound = lazy(() => import("@/pages/not-found"));
 const AdminLogin = lazy(() => import("@/pages/admin-login"));
 const AdminProducts = lazy(() => import("@/pages/admin-products"));
 const AdminOrders = lazy(() => import("@/pages/admin-orders"));
+const AdminGallery = lazy(() => import("@/pages/admin-gallery"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,6 +48,7 @@ function Router() {
           <Route path="/admin/login" component={AdminLogin} />
           <Route path="/admin/products" component={AdminProducts} />
           <Route path="/admin/orders" component={AdminOrders} />
+          <Route path="/admin/gallery" component={AdminGallery} />
           <Route path="/admin">
             {() => { window.location.replace("/admin/products"); return null; }}
           </Route>

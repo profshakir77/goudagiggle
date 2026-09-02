@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutGrid, ShoppingBag, LogOut, Menu, X, ExternalLink } from "lucide-react";
+import { LayoutGrid, ShoppingBag, Images, LogOut, Menu, X, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/admin/products", label: "Products", icon: LayoutGrid },
   { href: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { href: "/admin/gallery", label: "Gallery", icon: Images },
 ];
 
 async function logout() {
