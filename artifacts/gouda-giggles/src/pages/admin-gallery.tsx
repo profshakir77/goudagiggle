@@ -4,7 +4,7 @@ import { AdminLayout, useAdminAuth } from "@/components/admin-layout";
 import { Plus, Trash2, ImageUp, Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { apiFetch } from "@/lib/admin-fetch";
 
-const CATEGORIES = ["Boards", "Grazing Tables", "Workshops", "Dessert Boards"];
+const CATEGORIES = ["Boards", "Grazing Tables", "Charcuterie Cart", "Workshops", "Dessert Boards"];
 
 type GalleryImage = {
   id: number;
